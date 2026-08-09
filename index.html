@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>23ECE204 Electromagnetic Theory - Interactive Physics Portal</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Dark Theme (Default) */
+            --bg-main: #0d1117;
+            --bg-card: rgba(22, 27, 34, 0.85);
+            --bg-card-hover: #161b22;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --text-heading: #f0f6fc;
+            --text-muted: #8b949e;
+            --accent-primary: #58a6ff;
+            --accent-success: #3fb950;
+            --accent-warning: #d29922;
+            --accent-danger: #f85149;
+            --accent-purple: #a371f7;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        [data-theme="light"] {
+            --bg-main: #f6f8fa;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f3f4f6;
+            --border-color: #d0d7de;
+            --text-main: #24292f;
+            --text-heading: #1f2328;
+            --text-muted: #57606a;
+            --accent-primary: #0969da;
+            --accent-success: #1a7f37;
+            --accent-warning: #9a6700;
+            --accent-danger: #cf222e;
+            --accent-purple: #8250df;
+            --card-shadow: 0 8px 24px rgba(140, 149, 159, 0.15);
+        }
+
+        [data-theme="cyberpunk"] {
+            --bg-main: #030712;
+            --bg-card: rgba(12, 16, 43, 0.9);
+            --bg-card-hover: #161b40;
+            --border-color: #00f0ff;
+            --text-main: #e0f7fc;
+            --text-heading: #00f0ff;
+            --text-muted: #70a0c0;
+            --accent-primary: #00f0ff;
+            --accent-success: #00ff66;
+            --accent-warning: #ffb700;
+            --accent-danger: #ff0055;
+            --accent-purple: #d900ff;
+            --card-shadow: 0 8px 24px rgba(0, 240, 255, 0.25);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Navbar */
+        #navbar {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            height: 64px;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+            color: #fff;
+            font-size: 11px;
+            font-family: var(--font-mono);
+            padding: 3px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-theme, .btn-notes {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-theme:hover, .btn-notes:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Hero Banner */
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-heading);
+            margin: 0 0 12px 0;
+            letter-spacing: -0.5px;
+        }
+        .hero p {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 24px auto;
+            line-height: 1.6;
+        }
+
+        /* Search Filter */
+        .search-box {
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s ease;
+            box-shadow: var(--card-shadow);
+        }
+        .search-box input:focus {
+            border-color: var(--accent-primary);
+        }
+
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+        }
+
+        /* Lecture Card */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--card-shadow);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+            background: var(--bg-card-hover);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .card-num {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            background: rgba(88, 166, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .card-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin: 0 0 10px 0;
+            line-height: 1.3;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .card-formulas {
+            background: var(--bg-main);
+            border-left: 3px solid var(--accent-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .card-action {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+
+        .btn-launch {
+            width: 100%;
+            background: var(--accent-primary);
+            color: #ffffff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-launch:hover {
+            opacity: 0.9;
+            transform: scale(1.01);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            padding: 24px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 24px 16px; }
+            .hero h1 { font-size: 26px; }
+            .menu-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <nav id="navbar">
+        <a href="index.html" class="logo">
+            <span>⚡ EMT 3D Visual Physics</span>
+            <span class="logo-badge">23ECE204</span>
+        </a>
+        <div class="nav-actions">
+            <a href="EMT_Course_Notes.md" target="_blank" class="btn-notes">📖 Course Notes</a>
+            <button class="btn-theme" onclick="cycleTheme()">🎨 <span id="theme-label">Theme: Dark</span></button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>Electromagnetic Theory & Waves</h1>
+            <p>Interactive 3D WebGL physics engines for visualizing vectors, fields, potentials, boundary conditions, and Maxwell's equations. Select any lecture below to launch the simulation.</p>
+            
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="🔍 Search lectures by concept or equation (e.g. Gauss, Coulomb, Biot-Savart)..." onkeyup="filterLectures()">
+            </div>
+        </div>
+
+        <!-- Menu Grid -->
+        <div class="menu-grid" id="lecture-grid">
+
+            <!-- Card 1 -->
+            <div class="card" data-search="lecture 1 scalars vectors addition dot cross product">
+                <div>
+                    <div class="card-header">
+                        <span class="card-num">LEC 01</span>
+                        <span class="card-badge">3D Vector Engine</span>
+                    </div>
+                    <h3 class="card-title">Scalars & Vectors</h3>
+                    <p class="card-desc">Interactive 3D vector addition, dot product projections, cross product normal vectors, and unit vector components.</p>
+                    <div class="card-formulas">
+                        • R = A + B<br>
+                        • A · B = |A||B|cos(θ)<br>
+                        • C = A × B
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="Lec1_Scalars_and_Vectors.html" class="btn-launch">Launch 3D Simulation 🚀</a>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card" data-search="lecture 2 coordinate systems cartesian cylindrical spherical">
+                <div>
+                    <div class="card-header">
+                        <span class="card-num">LEC 02</span>
+                        <span class="card-badge">Coordinate Visualizer</span>
+                    </div>
+                    <h3 class="card-title">Coordinate Systems</h3>
+                    <p class="card-desc">3D surface & position vector converter between Cartesian (x,y,z), Cylindrical (ρ,φ,z), and Spherical (r,θ,φ).</p>
+                    <div class="card-formulas">
+                        • Cartesian: (x, y, z)<br>
+                        • Cylindrical: (ρ, φ, z)<br>
+                        • Spherical: (r, θ, φ)
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="Lec2_Coordinate_Systems.html" class="btn-launch">Launch 3D Simulation 🚀</a>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card" data-search="lecture 3 electrostatics coulomb law electric field superposition">
+                <div>
+                    <div class="card-header">
+                        <span class="card-num">LEC 03</span>
+                        <span class="card-badge">E-Field Simulator</span>
+                    </div>
+                    <h3 class="card-title">Electrostatics</h3>
+                    <p class="card-desc">Coulomb's law, point charges (+q / -q) placement in 3D space, net Coulomb force, and electric field vector field.</p>
+                    <div class="card-formulas">
+                        • F = (q1 q2)/(4π ε0 r²) ar<br>
+                        • E = q/(4π ε0 r²) ar (V/m)<br>
+                        • Superposition: E_net = Σ E_i
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="Lec3_Electrostatics.html" class="btn-launch">Launch 3D Simulation 🚀</a>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card" data-search="lecture 4 gauss law electric flux density surface">
+                <div>
+                    <div class="card-header">
+                        <span class="card-num">LEC 04</span>
+                        <span class="card-badge">Gauss Law Simulator</span>
+                    </div>
+                    <h3 class="card-title">Gauss's Law & Flux</h3>
+                    <p class="card-desc">3D Gaussian surfaces (Spherical, Cylindrical, Planar) surrounding enclosed charges with normal flux vector integration.</p>
+                    <div class="card-formulas">
+                        • ∮ E · dS = Q_enc / ε0<br>
+                        • D = ε0 E<br>
+                        • ∇ · D = ρv
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="Lec4_Gauss_Law.html" class="btn-launch">Launch 3D Simulation 🚀</a>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="card" data-search="lecture 5 dielectric polarization dipole moment bound charge">
+                <div>
+                    <div class="card-header">
+                        <span class="card-num">LEC 05</span>
+                        <span class="card-badge">Dielectric Engine</span>
+                    </div>
+                    <h3 class="card-title">Dielectric Polarization</h3>
+                    <p class="card-desc">Microscopic dipole alignment in external electric field E0, polarization vector P, and bound surface charge density σb.</p>
+                    <div class="card-formulas">
+                        • P = χe ε0 E<br>
+                        • D = ε0 E + P = ε0 εr E<br>
+                        • σb = P · n
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="Lec5_Dielectric_Polarization.html" class="btn-launch">Launch 3D Simulation 🚀</a>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="card" data-search="lecture 6 electric potential work done line integral gradient">
+                <div>
+                    <div class="card-header">
+                        <span class="card-num">LEC 06</span>
+                        <span class="card-badge">Potential Engine</span>
+                    </div>
+                    <h3 class="card-title">Potential & Work</h3>
+                    <p class="card-desc">3D equipotential contours V(r), test charge trajectory path integration A → B, and E-field gradient relationship E = -∇V.</p>
+                    <div class="card-formulas">
+                        • W = -q ∫ E · dl = q(VB - VA)<br>
+                        • V(r) = q / (4π ε0 r)<br>
+                        • E = -∇V
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="Lec6_Potential_and_Work.html" class="btn-launch">Launch 3D Simulation 🚀</a>
+                </div>
+            </div>
+
+            <!-- Card 7 -->
+            <div class="card" data-search="lecture 7 poisson laplace equation solver finite difference fdm grid">
+                <div>
+                    <div class="card-header">
+                        <span class="card-num">LEC 07</span>
+                        <span class="card-badge">2D FDM Grid Solver</span>
+                    </div>
+                    <h3 class="card-title">Poisson & Laplace Solver</h3>
+                    <p class="card-desc">Interactive 2D/3D Finite Difference Method (FDM) relaxation grid solver for electrostatics boundary value problems.</p>
+                    <div class="card-formulas">
+                        • Laplace: ∇²V = 0<br>
+                        • Poisson: ∇²V = -ρ / ε<br>
+                        • FDM: V_ij = ¼(V_u + V_d + V_l + V_r)
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="Lec7_Poisson_and_Laplace.html" class="btn-launch">Launch 2D Solver 🚀</a>
+                </div>
+            </div>
+
+            <!-- Card 8 -->
+            <div class="card" data-search="lecture 8 electrostatic boundary conditions dielectric refraction">
+                <div>
+                    <div class="card-header">
+                        <span class="card-num">LEC 08</span>
+                        <span class="card-badge">Boundary Engine</span>
+                    </div>
+                    <h3 class="card-title">Electrostatic Boundaries</h3>
+                    <p class="card-desc">Dielectric-dielectric and conductor interfaces showing tangential continuity Et1 = Et2 and law of refraction tan(θ1)/tan(θ2) = ε1/ε2.</p>
+                    <div class="card-formulas">
+                        • Et1 = Et2 (Continuous)<br>
+                        • Dn1 - Dn2 = σs (Jump)<br>
+                        • tan(θ1)/tan(θ2) = ε1/ε2
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="Lec8_Electrostatic_Boundaries.html" class="btn-launch">Launch 3D Simulation 🚀</a>
+                </div>
+            </div>
+
+            <!-- Card 9 -->
+            <div class="card" data-search="lecture 9 magnetostatics biot savart law ampere circuital magnetic field wire">
+                <div>
+                    <div class="card-header">
+                        <span class="card-num">LEC 09</span>
+                        <span class="card-badge">Magnetic Field Simulator</span>
+                    </div>
+                    <h3 class="card-title">Magnetostatics</h3>
+                    <p class="card-desc">3D current carrying wire, concentric magnetic flux density B loops, Biot-Savart law, and Ampere's closed loop line integral.</p>
+                    <div class="card-formulas">
+                        • dB = (μ0 I dl × ar) / (4π r²)<br>
+                        • ∮ H · dl = I_enc<br>
+                        • ∇ · B = 0
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="Lec9_Magnetostatics.html" class="btn-launch">Launch 3D Simulation 🚀</a>
+                </div>
+            </div>
+
+            <!-- Card 10 -->
+            <div class="card" data-search="lecture 10 magnetic boundary conditions permeability surface current">
+                <div>
+                    <div class="card-header">
+                        <span class="card-num">LEC 10</span>
+                        <span class="card-badge">Magnetic Boundary Engine</span>
+                    </div>
+                    <h3 class="card-title">Magnetic Boundaries</h3>
+                    <p class="card-desc">Magnetic media interfaces (μ1, μ2) with surface currents K, demonstrating Bn continuity and tangential H discontinuity.</p>
+                    <div class="card-formulas">
+                        • Bn1 = Bn2 (Continuous)<br>
+                        • Ht1 - Ht2 = K (Discontinuous)<br>
+                        • tan(θ1)/tan(θ2) = μ1/μ2
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="Lec10_Magnetic_Boundaries.html" class="btn-launch">Launch 3D Simulation 🚀</a>
+                </div>
+            </div>
+
+            <!-- Card 11 -->
+            <div class="card" data-search="lecture 11 maxwell equations electromagnetic waves tem faraday displacement current">
+                <div>
+                    <div class="card-header">
+                        <span class="card-num">LEC 11</span>
+                        <span class="card-badge">3D TEM Wave Engine</span>
+                    </div>
+                    <h3 class="card-title">Maxwell & EM Waves</h3>
+                    <p class="card-desc">3D Transverse Electromagnetic (TEM) wave propagation: orthogonal E(z,t) and H(z,t) waves, Faraday induction, and displacement current.</p>
+                    <div class="card-formulas">
+                        • ∇ × E = -∂B/∂t<br>
+                        • ∇ × H = J + ∂D/∂t<br>
+                        • c = 1 / √(μ0 ε0)
+                    </div>
+                </div>
+                <div class="card-action">
+                    <a href="Lec11_Maxwell_and_EM_Waves.html" class="btn-launch">Launch 3D Simulation 🚀</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>23ECE204 Electromagnetic Theory and Waves • Interactive WebGL Simulations & Consolidated Course Notes</p>
+    </footer>
+
+    <script>
+        const themes = ['dark', 'light', 'cyberpunk'];
+        let currentThemeIdx = 0;
+
+        function cycleTheme() {
+            currentThemeIdx = (currentThemeIdx + 1) % themes.length;
+            const theme = themes[currentThemeIdx];
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('theme-label').innerText = 'Theme: ' + theme.charAt(0).toUpperCase() + theme.slice(1);
+        }
+
+        function filterLectures() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                const searchData = card.getAttribute('data-search').toLowerCase();
+                const title = card.querySelector('.card-title').innerText.toLowerCase();
+                if (searchData.includes(query) || title.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

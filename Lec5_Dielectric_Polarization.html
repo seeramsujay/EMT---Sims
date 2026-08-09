@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture 5: Dielectric Polarization - 23ECE204 EMT Simulator</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <style>
+        :root {
+            --bg-main: #0d1117;
+            --bg-panel: rgba(22, 27, 34, 0.85);
+            --bg-control: #21262d;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --text-heading: #f0f6fc;
+            --text-muted: #8b949e;
+            --accent-primary: #58a6ff;
+            --font-main: 'Inter', system-ui, sans-serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+        [data-theme="light"] {
+            --bg-main: #f6f8fa;
+            --bg-panel: rgba(255, 255, 255, 0.9);
+            --bg-control: #eff1f3;
+            --border-color: #d0d7de;
+            --text-main: #24292f;
+            --text-heading: #1f2328;
+            --text-muted: #57606a;
+            --accent-primary: #0969da;
+        }
+        [data-theme="cyberpunk"] {
+            --bg-main: #030712;
+            --bg-panel: rgba(12, 16, 43, 0.9);
+            --bg-control: #1a1f4c;
+            --border-color: #00f0ff;
+            --text-main: #e0f7fc;
+            --text-heading: #00f0ff;
+            --text-muted: #70a0c0;
+            --accent-primary: #00f0ff;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden;
+            background-color: var(--bg-main); color: var(--text-main); font-family: var(--font-main);
+        }
+        #app-header {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 52px;
+            background: var(--bg-panel); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 100;
+        }
+        .header-title { font-weight: 700; font-size: 15px; color: var(--text-heading); display: flex; align-items: center; gap: 10px; }
+        .badge { background: var(--accent-primary); color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-family: var(--font-mono); }
+        .nav-btn {
+            background: var(--bg-control); border: 1px solid var(--border-color); color: var(--text-main);
+            padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px;
+        }
+        .nav-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+        #canvas-container, #canvas2d-container { width: 100vw; height: calc(100vh - 52px); position: absolute; top: 52px; left: 0; }
+        #control-panel {
+            position: absolute; top: 68px; right: 16px; width: 320px; max-height: calc(100vh - 84px);
+            background: var(--bg-panel); backdrop-filter: blur(12px); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 16px; z-index: 80; overflow-y: auto;
+        }
+        .panel-title { font-size: 14px; font-weight: 700; color: var(--text-heading); margin: 0 0 12px 0; display: flex; justify-content: space-between; }
+        .control-group { margin-bottom: 14px; }
+        .control-group label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+        .control-group label .val { color: var(--accent-primary); font-family: var(--font-mono); }
+        input[type="range"] { width: 100%; accent-color: var(--accent-primary); cursor: pointer; }
+        select { width: 100%; background: var(--bg-control); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px; border-radius: 6px; }
+        #theory-overlay {
+            position: absolute; bottom: 16px; left: 16px; max-width: 440px;
+            background: var(--bg-panel); backdrop-filter: blur(12px); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 14px 16px; z-index: 80; font-size: 12px; line-height: 1.5;
+        }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+        .sim-btn { background: var(--bg-control); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+        .sim-btn.active { background: var(--accent-primary); color: #fff; }
+        .legend-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 11px; }
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <header id="app-header">
+        <div class="header-title">
+            <span>Lecture 5: Dielectric Polarization</span>
+            <span class="badge">3D Dielectric Engine</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <a href="index.html" class="nav-btn">🏠 Main Hub</a>
+            <a href="Lec4_Gauss_Law.html" class="nav-btn">◀ Prev</a>
+            <a href="Lec6_Potential_and_Work.html" class="nav-btn">Next ▶</a>
+            <button class="nav-btn" onclick="cycleTheme()">🎨 Theme</button>
+        </div>
+    </header>
+
+    <div id="canvas-container"></div>
+    <canvas id="canvas2d-container" style="display:none;"></canvas>
+
+    <div id="control-panel">
+        <div class="panel-title">
+            <span>Parameters</span>
+            <span style="font-size:11px; opacity:0.7;">Interactive</span>
+        </div>
+        
+            <div class="control-group">
+                <label>External E-Field (E0) <span class="val" id="val-e0">5.0 V/m</span></label>
+                <input type="range" id="e0" min="0" max="10" value="5" step="0.5" oninput="updateSim()">
+            </div>
+            <div class="control-group">
+                <label>Relative Permittivity (εr) <span class="val" id="val-er">4.0</span></label>
+                <input type="range" id="er" min="1" max="10" value="4" step="0.5" oninput="updateSim()">
+            </div>
+        
+        <div id="legend">
+            <div class="legend-row"><div class="legend-color" style="background:#58a6ff;"></div> <b>External E0 Field</b></div>
+            <div class="legend-row"><div class="legend-color" style="background:#a371f7;"></div> <b>Polarization P Vector</b></div>
+        </div>
+    </div>
+
+    <div id="theory-overlay">
+        <h4 style="margin:0 0 6px 0; color:var(--text-heading);">Lecture 5: Dielectric Polarization Theory</h4>
+        <div>• <b>Polarization Vector</b>: P = χe ε0 E.<br>• <b>Displacement Field</b>: D = ε0 E + P = ε0 εr E.<br>• Bound surface charge density: σb = P · n.</div>
+    </div>
+
+    <script>
+        const themes = ['dark', 'light', 'cyberpunk'];
+        let currentThemeIdx = 0;
+        function cycleTheme() {
+            currentThemeIdx = (currentThemeIdx + 1) % themes.length;
+            const theme = themes[currentThemeIdx];
+            document.documentElement.setAttribute('data-theme', theme);
+            let bgColor = 0x0d1117;
+            if (theme === 'light') bgColor = 0xf6f8fa;
+            if (theme === 'cyberpunk') bgColor = 0x030712;
+            if (renderer) renderer.setClearColor(bgColor, 1);
+        }
+
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / (window.innerHeight - 52), 0.1, 1000);
+        camera.position.set(0, 6, 14);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight - 52);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setClearColor(0x0d1117, 1);
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(10, 15, 10);
+        scene.add(dirLight);
+
+        let activeObjects = [];
+
+        
+            window.updateSim = function() {
+                activeObjects.forEach(o => scene.remove(o));
+                activeObjects = [];
+                const E0 = parseFloat(document.getElementById('e0').value);
+                const er = parseFloat(document.getElementById('er').value);
+                document.getElementById('val-e0').innerText = E0.toFixed(1) + ' V/m';
+                document.getElementById('val-er').innerText = er.toFixed(1);
+                const slabGeo = new THREE.BoxGeometry(6, 4, 3);
+                const slabMesh = new THREE.Mesh(slabGeo, new THREE.MeshPhongMaterial({ color: 0x21262d, transparent: true, opacity: 0.5 }));
+                scene.add(slabMesh); activeObjects.push(slabMesh);
+                const shift = (E0 * (er - 1) / 10) * 0.15;
+                for (let x = -2; x <= 2; x += 1.2) {
+                    for (let y = -1; y <= 1; y += 1.0) {
+                        const pMesh = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 12), new THREE.MeshStandardMaterial({ color: 0xf85149 }));
+                        pMesh.position.set(x + shift, y, 0); scene.add(pMesh); activeObjects.push(pMesh);
+                        const nMesh = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 12), new THREE.MeshStandardMaterial({ color: 0x58a6ff }));
+                        nMesh.position.set(x - shift, y, 0); scene.add(nMesh); activeObjects.push(nMesh);
+                    }
+                }
+                if (E0 > 0.1) {
+                    const arrowE0 = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(-4, 2.5, 0), E0 * 0.5, 0x58a6ff, 0.3, 0.2);
+                    scene.add(arrowE0); activeObjects.push(arrowE0);
+                }
+            };
+            updateSim();
+        
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            if (window.isEMWave) {
+                const freq = parseFloat(document.getElementById('wfreq')?.value || 1.0);
+                window.animTime += 0.03 * freq;
+                activeObjects.forEach(o => scene.remove(o));
+                activeObjects = [];
+                const ePts = [], hPts = [];
+                for (let z = -6; z <= 6; z += 0.2) {
+                    const ex = Math.sin(z * 1.5 - window.animTime) * 2;
+                    const hy = Math.sin(z * 1.5 - window.animTime) * 2;
+                    ePts.push(new THREE.Vector3(ex, 0, z));
+                    hPts.push(new THREE.Vector3(0, hy, z));
+                }
+                const eLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ePts), new THREE.LineBasicMaterial({ color: 0x58a6ff, linewidth: 2 }));
+                const hLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(hPts), new THREE.LineBasicMaterial({ color: 0xf85149, linewidth: 2 }));
+                scene.add(eLine); activeObjects.push(eLine);
+                scene.add(hLine); activeObjects.push(hLine);
+            }
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / (window.innerHeight - 52);
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight - 52);
+        });
+    </script>
+</body>
+</html>
