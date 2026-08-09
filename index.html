@@ -64,250 +64,110 @@
 
         * { box-sizing: border-box; }
         body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            font-family: var(--font-main);
+            margin: 0; padding: 0; min-height: 100vh;
+            background-color: var(--bg-main); color: var(--text-main); font-family: var(--font-main);
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* Navbar */
         #navbar {
-            position: sticky;
-            top: 0;
-            width: 100%;
-            height: 64px;
-            background: var(--bg-card);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 32px;
-            z-index: 100;
+            position: sticky; top: 0; width: 100%; height: 64px;
+            background: var(--bg-card); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 32px; z-index: 100;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text-heading);
-            text-decoration: none;
-        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 800; color: var(--text-heading); text-decoration: none; }
+        .logo-badge { background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple)); color: #fff; font-size: 11px; font-family: var(--font-mono); padding: 3px 8px; border-radius: 12px; text-transform: uppercase; }
 
-        .logo-badge {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
-            color: #fff;
-            font-size: 11px;
-            font-family: var(--font-mono);
-            padding: 3px 8px;
-            border-radius: 12px;
-            text-transform: uppercase;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
 
         .btn-theme, .btn-notes {
-            background: var(--bg-main);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
+            background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-main);
+            padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+            text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;
         }
-        .btn-theme:hover, .btn-notes:hover {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            transform: translateY(-1px);
-        }
+        .btn-theme:hover, .btn-notes:hover { border-color: var(--accent-primary); color: var(--accent-primary); transform: translateY(-1px); }
 
         /* Main Container */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 40px 24px;
-        }
+        .container { max-width: 1280px; margin: 0 auto; padding: 40px 24px; }
 
         /* Hero Banner */
-        .hero {
-            text-align: center;
-            margin-bottom: 48px;
+        .hero { text-align: center; margin-bottom: 48px; }
+        .hero h1 { font-size: 36px; font-weight: 800; color: var(--text-heading); margin: 0 0 12px 0; letter-spacing: -0.5px; }
+        .hero p { font-size: 16px; color: var(--text-muted); max-width: 680px; margin: 0 auto 24px auto; line-height: 1.6; }
+
+        /* Feature Section - Interactive Labs */
+        .featured-labs {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 48px;
         }
-        .hero h1 {
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--text-heading);
-            margin: 0 0 12px 0;
-            letter-spacing: -0.5px;
+        .lab-card {
+            background: linear-gradient(135deg, rgba(88, 166, 255, 0.1), rgba(163, 113, 247, 0.05));
+            border: 2px solid var(--accent-primary); border-radius: 16px; padding: 24px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow);
         }
-        .hero p {
-            font-size: 16px;
-            color: var(--text-muted);
-            max-width: 680px;
-            margin: 0 auto 24px auto;
-            line-height: 1.6;
+        .lab-card.elec {
+            background: linear-gradient(135deg, rgba(248, 81, 73, 0.1), rgba(88, 166, 255, 0.05));
+            border-color: var(--accent-danger);
         }
+        .lab-card.mag {
+            background: linear-gradient(135deg, rgba(63, 185, 80, 0.1), rgba(210, 153, 34, 0.05));
+            border-color: var(--accent-success);
+        }
+        .lab-card h2 { margin: 0 0 10px 0; color: var(--text-heading); font-size: 18px; font-weight: 800; }
+        .lab-card p { color: var(--text-muted); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+
+        .btn-lab {
+            background: var(--accent-primary); color: #fff; text-decoration: none; padding: 10px 16px;
+            border-radius: 10px; font-weight: 700; font-size: 13px; text-align: center; transition: all 0.2s ease;
+        }
+        .btn-lab.elec { background: var(--accent-danger); }
+        .btn-lab.mag { background: var(--accent-success); }
+        .btn-lab:hover { transform: translateY(-2px); opacity: 0.95; }
+
+        .section-title { font-size: 20px; font-weight: 800; color: var(--text-heading); margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
 
         /* Search Filter */
-        .search-box {
-            max-width: 480px;
-            margin: 0 auto;
-            position: relative;
-        }
+        .search-box { max-width: 480px; margin: 0 auto 32px auto; }
         .search-box input {
-            width: 100%;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.2s ease;
-            box-shadow: var(--card-shadow);
+            width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);
+            padding: 12px 16px; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s ease; box-shadow: var(--card-shadow);
         }
-        .search-box input:focus {
-            border-color: var(--accent-primary);
-        }
+        .search-box input:focus { border-color: var(--accent-primary); }
 
         /* Menu Grid */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-            gap: 24px;
-        }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; }
 
         /* Lecture Card */
         .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: var(--card-shadow);
-            transition: all 0.25s ease;
-            position: relative;
-            overflow: hidden;
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 24px;
+            display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); transition: all 0.25s ease;
         }
-        .card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent-primary);
-            background: var(--bg-card-hover);
-        }
+        .card:hover { transform: translateY(-4px); border-color: var(--accent-primary); background: var(--bg-card-hover); }
 
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .card-num {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--accent-primary);
-            background: rgba(88, 166, 255, 0.1);
-            padding: 4px 10px;
-            border-radius: 6px;
-        }
-
-        .card-badge {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            padding: 3px 8px;
-            border-radius: 6px;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-heading);
-            margin: 0 0 10px 0;
-            line-height: 1.3;
-        }
-
-        .card-desc {
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin-bottom: 16px;
-        }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .card-num { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--accent-primary); background: rgba(88, 166, 255, 0.1); padding: 4px 10px; border-radius: 6px; }
+        .card-badge { font-size: 11px; font-weight: 600; color: var(--text-muted); border: 1px solid var(--border-color); padding: 3px 8px; border-radius: 6px; }
+        .card-title { font-size: 18px; font-weight: 700; color: var(--text-heading); margin: 0 0 10px 0; line-height: 1.3; }
+        .card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
 
         .card-formulas {
-            background: var(--bg-main);
-            border-left: 3px solid var(--accent-primary);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            color: var(--text-main);
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        .card-action {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: auto;
+            background: var(--bg-main); border-left: 3px solid var(--accent-primary); padding: 8px 12px;
+            border-radius: 6px; font-family: var(--font-mono); font-size: 11px; color: var(--text-main); margin-bottom: 20px; line-height: 1.5;
         }
 
         .btn-launch {
-            width: 100%;
-            background: var(--accent-primary);
-            color: #ffffff;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-heading);
+            padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none;
+            text-align: center; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn-launch:hover {
-            opacity: 0.9;
-            transform: scale(1.01);
-        }
+        .btn-launch:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
 
-        /* Footer */
-        footer {
-            margin-top: 60px;
-            text-align: center;
-            padding: 24px;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 13px;
-        }
+        footer { margin-top: 60px; text-align: center; padding: 24px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 13px; }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .container { padding: 24px 16px; }
             .hero h1 { font-size: 26px; }
+            .featured-labs { grid-template-columns: 1fr; }
             .menu-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -317,10 +177,11 @@
     <!-- Header Navigation -->
     <nav id="navbar">
         <a href="index.html" class="logo">
-            <span>⚡ EMT 3D Visual Physics</span>
+            <span>⚡ EMT 3D Visual Physics Portal</span>
             <span class="logo-badge">23ECE204</span>
         </a>
         <div class="nav-actions">
+            <a href="README.md" target="_blank" class="btn-notes">📜 Student README</a>
             <a href="EMT_Course_Notes.md" target="_blank" class="btn-notes">📖 Course Notes</a>
             <button class="btn-theme" onclick="cycleTheme()">🎨 <span id="theme-label">Theme: Dark</span></button>
         </div>
@@ -331,11 +192,41 @@
         <!-- Hero Section -->
         <div class="hero">
             <h1>Electromagnetic Theory & Waves</h1>
-            <p>Interactive 3D WebGL physics engines for visualizing vectors, fields, potentials, boundary conditions, and Maxwell's equations. Select any lecture below to launch the simulation.</p>
-            
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="🔍 Search lectures by concept or equation (e.g. Gauss, Coulomb, Biot-Savart)..." onkeyup="filterLectures()">
+            <p>Interactive 3D WebGL physics engines for understanding how charges, electric fields, current-carrying wires, magnetic fields, and Maxwell's equations work in free space.</p>
+        </div>
+
+        <!-- Featured Interactive Experiment Laboratories -->
+        <div class="featured-labs">
+            <div class="lab-card">
+                <div>
+                    <h2>🧠 Gradient, Divergence & Curl</h2>
+                    <p>Build true physical intuition! Understand Gradient (slope steepness), Divergence (faucets & sinks), and Curl (whirlpools & rotation) visually in 3D space.</p>
+                </div>
+                <a href="Vector_Calculus_Intuition.html" class="btn-lab">Launch Intuition Lab 🧠</a>
             </div>
+
+            <div class="lab-card elec">
+                <div>
+                    <h2>⚡ Electrostatics Sandbox</h2>
+                    <p>Place charges (+q / -q) in free space. Observe 3D electric field vectors, stream lines, potential V(r), and drag a test charge to measure Coulomb force F = q0 E!</p>
+                </div>
+                <a href="Electrostatics_Sandbox.html" class="btn-lab elec">Launch Electrostatics Lab ⚡</a>
+            </div>
+
+            <div class="lab-card mag">
+                <div>
+                    <h2>🧲 Magnetostatics Sandbox</h2>
+                    <p>Place current-carrying straight wires, wire loops, or solenoids. Understand how magnetic fields B are generated, test the Right-Hand Rule, and observe Lorentz force!</p>
+                </div>
+                <a href="Magnetostatics_Sandbox.html" class="btn-lab mag">Launch Magnetism Lab 🧲</a>
+            </div>
+        </div>
+
+        <div class="section-title">📚 Lecture-by-Lecture Simulations (Lec 1 to 11)</div>
+
+        <!-- Search Filter -->
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="🔍 Search lectures by concept or equation (e.g. Gauss, Coulomb, Biot-Savart)..." onkeyup="filterLectures()">
         </div>
 
         <!-- Menu Grid -->
@@ -356,9 +247,7 @@
                         • C = A × B
                     </div>
                 </div>
-                <div class="card-action">
-                    <a href="Lec1_Scalars_and_Vectors.html" class="btn-launch">Launch 3D Simulation 🚀</a>
-                </div>
+                <a href="Lec1_Scalars_and_Vectors.html" class="btn-launch">Launch 3D Simulation 🚀</a>
             </div>
 
             <!-- Card 2 -->
@@ -376,9 +265,7 @@
                         • Spherical: (r, θ, φ)
                     </div>
                 </div>
-                <div class="card-action">
-                    <a href="Lec2_Coordinate_Systems.html" class="btn-launch">Launch 3D Simulation 🚀</a>
-                </div>
+                <a href="Lec2_Coordinate_Systems.html" class="btn-launch">Launch 3D Simulation 🚀</a>
             </div>
 
             <!-- Card 3 -->
@@ -396,9 +283,7 @@
                         • Superposition: E_net = Σ E_i
                     </div>
                 </div>
-                <div class="card-action">
-                    <a href="Lec3_Electrostatics.html" class="btn-launch">Launch 3D Simulation 🚀</a>
-                </div>
+                <a href="Lec3_Electrostatics.html" class="btn-launch">Launch 3D Simulation 🚀</a>
             </div>
 
             <!-- Card 4 -->
@@ -416,9 +301,7 @@
                         • ∇ · D = ρv
                     </div>
                 </div>
-                <div class="card-action">
-                    <a href="Lec4_Gauss_Law.html" class="btn-launch">Launch 3D Simulation 🚀</a>
-                </div>
+                <a href="Lec4_Gauss_Law.html" class="btn-launch">Launch 3D Simulation 🚀</a>
             </div>
 
             <!-- Card 5 -->
@@ -436,9 +319,7 @@
                         • σb = P · n
                     </div>
                 </div>
-                <div class="card-action">
-                    <a href="Lec5_Dielectric_Polarization.html" class="btn-launch">Launch 3D Simulation 🚀</a>
-                </div>
+                <a href="Lec5_Dielectric_Polarization.html" class="btn-launch">Launch 3D Simulation 🚀</a>
             </div>
 
             <!-- Card 6 -->
@@ -456,9 +337,7 @@
                         • E = -∇V
                     </div>
                 </div>
-                <div class="card-action">
-                    <a href="Lec6_Potential_and_Work.html" class="btn-launch">Launch 3D Simulation 🚀</a>
-                </div>
+                <a href="Lec6_Potential_and_Work.html" class="btn-launch">Launch 3D Simulation 🚀</a>
             </div>
 
             <!-- Card 7 -->
@@ -476,9 +355,7 @@
                         • FDM: V_ij = ¼(V_u + V_d + V_l + V_r)
                     </div>
                 </div>
-                <div class="card-action">
-                    <a href="Lec7_Poisson_and_Laplace.html" class="btn-launch">Launch 2D Solver 🚀</a>
-                </div>
+                <a href="Lec7_Poisson_and_Laplace.html" class="btn-launch">Launch 2D Solver 🚀</a>
             </div>
 
             <!-- Card 8 -->
@@ -496,9 +373,7 @@
                         • tan(θ1)/tan(θ2) = ε1/ε2
                     </div>
                 </div>
-                <div class="card-action">
-                    <a href="Lec8_Electrostatic_Boundaries.html" class="btn-launch">Launch 3D Simulation 🚀</a>
-                </div>
+                <a href="Lec8_Electrostatic_Boundaries.html" class="btn-launch">Launch 3D Simulation 🚀</a>
             </div>
 
             <!-- Card 9 -->
@@ -516,9 +391,7 @@
                         • ∇ · B = 0
                     </div>
                 </div>
-                <div class="card-action">
-                    <a href="Lec9_Magnetostatics.html" class="btn-launch">Launch 3D Simulation 🚀</a>
-                </div>
+                <a href="Lec9_Magnetostatics.html" class="btn-launch">Launch 3D Simulation 🚀</a>
             </div>
 
             <!-- Card 10 -->
@@ -536,9 +409,7 @@
                         • tan(θ1)/tan(θ2) = μ1/μ2
                     </div>
                 </div>
-                <div class="card-action">
-                    <a href="Lec10_Magnetic_Boundaries.html" class="btn-launch">Launch 3D Simulation 🚀</a>
-                </div>
+                <a href="Lec10_Magnetic_Boundaries.html" class="btn-launch">Launch 3D Simulation 🚀</a>
             </div>
 
             <!-- Card 11 -->
@@ -556,9 +427,7 @@
                         • c = 1 / √(μ0 ε0)
                     </div>
                 </div>
-                <div class="card-action">
-                    <a href="Lec11_Maxwell_and_EM_Waves.html" class="btn-launch">Launch 3D Simulation 🚀</a>
-                </div>
+                <a href="Lec11_Maxwell_and_EM_Waves.html" class="btn-launch">Launch 3D Simulation 🚀</a>
             </div>
 
         </div>
@@ -566,7 +435,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>23ECE204 Electromagnetic Theory and Waves • Interactive WebGL Simulations & Consolidated Course Notes</p>
+        <p>23ECE204 Electromagnetic Theory and Waves • Interactive WebGL Physics Simulations & Student Learning Portal</p>
     </footer>
 
     <script>

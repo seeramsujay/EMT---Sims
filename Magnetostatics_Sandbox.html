@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Magnetostatics Interactive Laboratory - EMT Physics</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <style>
+        :root {
+            --bg-main: #0d1117;
+            --bg-panel: rgba(22, 27, 34, 0.88);
+            --bg-control: #21262d;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --text-heading: #f0f6fc;
+            --text-muted: #8b949e;
+            --accent-primary: #3fb950;
+            --accent-wire: #f85149;
+            --accent-field: #3fb950;
+            --accent-force: #a371f7;
+            --font-main: 'Inter', system-ui, sans-serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        [data-theme="light"] {
+            --bg-main: #f6f8fa;
+            --bg-panel: rgba(255, 255, 255, 0.92);
+            --bg-control: #eff1f3;
+            --border-color: #d0d7de;
+            --text-main: #24292f;
+            --text-heading: #1f2328;
+            --text-muted: #57606a;
+            --accent-primary: #1a7f37;
+            --accent-wire: #cf222e;
+            --accent-field: #1a7f37;
+            --accent-force: #8250df;
+        }
+
+        [data-theme="cyberpunk"] {
+            --bg-main: #030712;
+            --bg-panel: rgba(12, 16, 43, 0.92);
+            --bg-control: #1a1f4c;
+            --border-color: #00f0ff;
+            --text-main: #e0f7fc;
+            --text-heading: #00f0ff;
+            --text-muted: #70a0c0;
+            --accent-primary: #00ff66;
+            --accent-wire: #ff0055;
+            --accent-field: #00ff66;
+            --accent-force: #d900ff;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden;
+            background-color: var(--bg-main); color: var(--text-main); font-family: var(--font-main);
+        }
+
+        #app-header {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 56px;
+            background: var(--bg-panel); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100;
+        }
+
+        .logo { font-weight: 800; font-size: 16px; color: var(--text-heading); display: flex; align-items: center; gap: 10px; }
+        .badge { background: var(--accent-primary); color: #fff; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-family: var(--font-mono); }
+
+        .nav-btn {
+            background: var(--bg-control); border: 1px solid var(--border-color); color: var(--text-main);
+            padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px; font-weight: 600;
+        }
+        .nav-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+
+        #canvas-container { width: 100vw; height: calc(100vh - 56px); position: absolute; top: 56px; left: 0; }
+
+        /* Floating Controls */
+        #control-panel {
+            position: absolute; top: 72px; right: 20px; width: 340px; max-height: calc(100vh - 96px);
+            background: var(--bg-panel); backdrop-filter: blur(12px); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 18px; z-index: 80; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .panel-title { font-size: 15px; font-weight: 700; color: var(--text-heading); margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+
+        .control-group { margin-bottom: 14px; }
+        .control-group label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+        .control-group label .val { color: var(--accent-primary); font-family: var(--font-mono); }
+
+        input[type="range"] { width: 100%; accent-color: var(--accent-primary); cursor: pointer; }
+        select { width: 100%; background: var(--bg-control); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px; border-radius: 6px; font-size: 12px; }
+
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+        .sim-btn {
+            background: var(--bg-control); border: 1px solid var(--border-color); color: var(--text-main);
+            padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center;
+        }
+        .sim-btn:hover, .sim-btn.active { background: var(--accent-primary); color: #fff; border-color: var(--accent-primary); }
+
+        /* Floating Student Guide Overlay */
+        #student-guide {
+            position: absolute; bottom: 20px; left: 20px; max-width: 480px;
+            background: var(--bg-panel); backdrop-filter: blur(12px); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 16px 20px; z-index: 80; font-size: 13px; line-height: 1.6; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        #student-guide h3 { margin: 0 0 8px 0; color: var(--text-heading); font-size: 15px; }
+
+        .readout {
+            background: var(--bg-main); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px;
+            font-family: var(--font-mono); font-size: 12px; margin-top: 10px; border-left: 3px solid var(--accent-force);
+        }
+    </style>
+</head>
+<body>
+
+    <header id="app-header">
+        <div class="logo">
+            <span>🧲 Magnetostatics Sandbox</span>
+            <span class="badge">Interactive Lab</span>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <a href="index.html" class="nav-btn">🏠 Portal Menu</a>
+            <a href="Electrostatics_Sandbox.html" class="nav-btn">⚡ Electrostatics Lab ◀</a>
+            <a href="EMT_Course_Notes.md" target="_blank" class="nav-btn">📖 Course Notes</a>
+            <button class="nav-btn" onclick="cycleTheme()">🎨 Theme</button>
+        </div>
+    </header>
+
+    <div id="canvas-container"></div>
+
+    <!-- Control Panel -->
+    <div id="control-panel">
+        <div class="panel-title">
+            <span>Current Source Setup</span>
+            <span style="font-size:11px; opacity:0.7;">3D Field</span>
+        </div>
+
+        <div class="control-group">
+            <label>Current Source Geometry</label>
+            <select id="geom-type" onchange="updateLab()">
+                <option value="straight">Straight Wire (Infinite)</option>
+                <option value="loop">Circular Wire Loop</option>
+                <option value="solenoid">Solenoid Coil</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label>Electric Current (I) <span class="val" id="val-curr">5.0 A</span></label>
+            <input type="range" id="curr" min="-10" max="10" value="5" step="0.5" oninput="updateLab()">
+        </div>
+
+        <div class="control-group">
+            <label>Loop / Coil Radius (R) <span class="val" id="val-radius">2.5 m</span></label>
+            <input type="range" id="radius" min="1" max="5" value="2.5" step="0.2" oninput="updateLab()">
+        </div>
+
+        <div class="control-group">
+            <label>Compass Probe Position (Radius r) <span class="val" id="val-probe">2.0 m</span></label>
+            <input type="range" id="probe-r" min="0.5" max="6" value="2.0" step="0.1" oninput="updateLab()">
+        </div>
+
+        <div class="readout" id="physics-readout">
+            • B-Field |B| = 0.50 mT<br>
+            • Direction = Right-Hand Rule<br>
+            • Magnetic Force Fm = q(v × B)
+        </div>
+    </div>
+
+    <!-- Student Guide -->
+    <div id="student-guide">
+        <h3>💡 How Magnetism Works</h3>
+        <div>
+            1. <b>Electric Currents ($I$)</b> create <i>magnetic fields</i> $\vec{B}$ (Biot-Savart & Ampere's Laws).<br>
+            2. <b>Right-Hand Rule</b>: Point thumb in current direction $I$, fingers curl in direction of $\vec{B}$ field.<br>
+            3. Magnetic field lines $\vec{B}$ form <b>continuous closed loops</b> with zero divergence ($\nabla \cdot \vec{B} = 0$).<br>
+            4. Moving charges experience Lorentz Force $\vec{F}_m = q (\vec{v} \times \vec{B})$ perpendicular to both velocity and field!
+        </div>
+    </div>
+
+    <script>
+        const themes = ['dark', 'light', 'cyberpunk'];
+        let themeIdx = 0;
+        function cycleTheme() {
+            themeIdx = (themeIdx + 1) % themes.length;
+            const theme = themes[themeIdx];
+            document.documentElement.setAttribute('data-theme', theme);
+            let bgColor = 0x0d1117;
+            if (theme === 'light') bgColor = 0xf6f8fa;
+            if (theme === 'cyberpunk') bgColor = 0x030712;
+            if (renderer) renderer.setClearColor(bgColor, 1);
+        }
+
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / (window.innerHeight - 56), 0.1, 1000);
+        camera.position.set(0, 8, 14);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight - 56);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setClearColor(0x0d1117, 1);
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(10, 15, 10);
+        scene.add(dirLight);
+
+        let activeObjects = [];
+
+        window.updateLab = function() {
+            activeObjects.forEach(o => scene.remove(o));
+            activeObjects = [];
+
+            const geom = document.getElementById('geom-type').value;
+            const I = parseFloat(document.getElementById('curr').value);
+            const R = parseFloat(document.getElementById('radius').value);
+            const pr = parseFloat(document.getElementById('probe-r').value);
+
+            document.getElementById('val-curr').innerText = (I>=0?'+':'') + I.toFixed(1) + ' A';
+            document.getElementById('val-radius').innerText = R.toFixed(1) + ' m';
+            document.getElementById('val-probe').innerText = pr.toFixed(1) + ' m';
+
+            if (geom === 'straight') {
+                // Straight Wire (Red Cylinder)
+                const wireGeo = new THREE.CylinderGeometry(0.12, 0.12, 12, 16);
+                const wireMesh = new THREE.Mesh(wireGeo, new THREE.MeshStandardMaterial({ color: 0xf85149 }));
+                scene.add(wireMesh); activeObjects.push(wireMesh);
+
+                // Current Direction Arrow (Red)
+                if (Math.abs(I) > 0.1) {
+                    const dirY = I > 0 ? 1 : -1;
+                    const cArrow = new THREE.ArrowHelper(new THREE.Vector3(0, dirY, 0), new THREE.Vector3(0, 0, 0), Math.abs(I)*0.6, 0xf85149, 0.4, 0.2);
+                    scene.add(cArrow); activeObjects.push(cArrow);
+                }
+
+                // Concentric Magnetic Field Rings (Green)
+                [1.5, 2.5, 3.8, 5.0].forEach(r => {
+                    const pts = [];
+                    for (let a = 0; a <= Math.PI * 2; a += 0.1) {
+                        pts.push(new THREE.Vector3(r * Math.cos(a), 0, r * Math.sin(a)));
+                    }
+                    const circle = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0x3fb950, linewidth: 2 }));
+                    scene.add(circle); activeObjects.push(circle);
+
+                    // Field Direction Arrow Heads
+                    if (Math.abs(I) > 0.1) {
+                        const tangent = new THREE.Vector3(-Math.sin(0), 0, Math.cos(0)).multiplyScalar(I > 0 ? 1 : -1);
+                        const arrow = new THREE.ArrowHelper(tangent, new THREE.Vector3(r, 0, 0), 0.5, 0x3fb950, 0.2, 0.1);
+                        scene.add(arrow); activeObjects.push(arrow);
+                    }
+                });
+
+                // Compass Probe Vector at radius pr
+                const probePos = new THREE.Vector3(pr, 0, 0);
+                const Bdir = new THREE.Vector3(0, 0, I > 0 ? 1 : -1);
+                const Bmag = Math.abs(I) / pr;
+                const pArrow = new THREE.ArrowHelper(Bdir, probePos, Math.min(Bmag * 0.8, 2.5), 0xa371f7, 0.3, 0.15);
+                scene.add(pArrow); activeObjects.push(pArrow);
+
+                document.getElementById('physics-readout').innerHTML = `
+                    • <b>B-Field |B|</b> = ${(Bmag * 0.2).toFixed(2)} mT<br>
+                    • <b>Formula</b>: B = (μ0 I) / (2π r)<br>
+                    • <b>Rule</b>: Right-Hand Thumb Rule
+                `;
+
+            } else if (geom === 'loop') {
+                // Circular Wire Loop
+                const ringGeo = new THREE.TorusGeometry(R, 0.1, 16, 64);
+                const ringMesh = new THREE.Mesh(ringGeo, new THREE.MeshStandardMaterial({ color: 0xf85149 }));
+                ringMesh.rotation.x = Math.PI / 2;
+                scene.add(ringMesh); activeObjects.push(ringMesh);
+
+                // Field Lines along Z axis
+                const linePts = [];
+                for (let y = -5; y <= 5; y += 0.5) linePts.push(new THREE.Vector3(0, y, 0));
+                const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(linePts), new THREE.LineBasicMaterial({ color: 0x3fb950, linewidth: 2 }));
+                scene.add(line); activeObjects.push(line);
+
+                const Bcenter = Math.abs(I) / R;
+                document.getElementById('physics-readout').innerHTML = `
+                    • <b>Center B-Field |B|</b> = ${(Bcenter * 0.4).toFixed(2)} mT<br>
+                    • <b>Formula</b>: B = (μ0 I) / (2 R)<br>
+                    • <b>Rule</b>: Curling fingers along I
+                `;
+
+            } else if (geom === 'solenoid') {
+                // Solenoid Coil Helix
+                const coilPts = [];
+                const turns = 8;
+                for (let t = -Math.PI * turns; t <= Math.PI * turns; t += 0.1) {
+                    coilPts.push(new THREE.Vector3(R * Math.cos(t), t * 0.2, R * Math.sin(t)));
+                }
+                const coilLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(coilPts), new THREE.LineBasicMaterial({ color: 0xf85149, linewidth: 3 }));
+                scene.add(coilLine); activeObjects.push(coilLine);
+
+                // Uniform Field inside Solenoid
+                for (let x = -R * 0.5; x <= R * 0.5; x += R * 0.5) {
+                    const arrow = new THREE.ArrowHelper(new THREE.Vector3(0, I > 0 ? 1 : -1, 0), new THREE.Vector3(x, -3, 0), 6, 0x3fb950, 0.3, 0.15);
+                    scene.add(arrow); activeObjects.push(arrow);
+                }
+
+                document.getElementById('physics-readout').innerHTML = `
+                    • <b>Solenoid B-Field |B|</b> = ${(Math.abs(I) * 0.5).toFixed(2)} mT<br>
+                    • <b>Formula</b>: B = μ0 n I (Uniform Inside)<br>
+                    • <b>North Pole</b>: ${I > 0 ? 'Top (+Y)' : 'Bottom (-Y)'}
+                `;
+            }
+        };
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / (window.innerHeight - 56);
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight - 56);
+        });
+
+        updateLab();
+    </script>
+</body>
+</html>
