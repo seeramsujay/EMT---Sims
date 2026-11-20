@@ -1,4 +1,22 @@
-# ⚡ Electromagnetic Theory (EMT) 3D Physics Simulations & Learning Suite
+<div align="center">
+
+<img src="assets/logo.svg" alt="EMT-Sims Logo" width="160" />
+
+# EMT-Sims
+### Interactive 3D Electromagnetic Theory & Maxwell Equation Visualizer Suite
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Engine: Three.js](https://img.shields.io/badge/Graphics-Three.js%20WebGL-black.svg?logo=three.js&logoColor=white)](https://threejs.org)
+[![Math: MathJax](https://img.shields.io/badge/Math-MathJax%203-orange.svg)](#)
+[![Format: Zero--Install Web](https://img.shields.io/badge/Deployment-Zero--Install%20HTML5-success.svg)](#)
+
+<p align="center">
+  <b>A comprehensive, browser-native suite of 3D interactive physics sandboxes and Maxwell equation visualizers engineered for intuitive electrodynamics education.</b>
+</p>
+
+</div>
+
+---
 
 Welcome to the **23ECE204 Electromagnetic Theory and Waves** interactive 3D WebGL simulation repository and comprehensive study suite!
 
